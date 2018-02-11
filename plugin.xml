@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin
+    id="cordova-clover-plugin"
+    version="0.0.1"
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <name>Cordova Clover Plugin</name>
+    <author>Rytis Tekorius</author>
+    <js-module name="cordova-clover-plugin" src="www/cordova-clover-plugin.js">
+        <clobbers target="plugins.clover" />
+    </js-module>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="cordova-clover-plugin">
+                <param name="android-package" value="com.tekorius.cordovaCloverPlugin.CordovaCloverPlugin" />
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+            <uses-permission android:name="clover.permission.ACTION_PAY"/>
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        </config-file>
+        <source-file
+            src="src/android/CordovaCloverPlugin.java"
+            target-dir="src/com/tekorius/cordovaCloverPlugin/" />
+    </platform>
+</plugin>
