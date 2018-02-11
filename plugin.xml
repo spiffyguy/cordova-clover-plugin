@@ -12,7 +12,7 @@
     </js-module>
     <platform name="android">
         <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="cordova-clover-plugin">
+            <feature name="CordovaCloverPlugin">
                 <param name="android-package" value="com.tekorius.cordovaCloverPlugin.CordovaCloverPlugin" />
             </feature>
         </config-file>
