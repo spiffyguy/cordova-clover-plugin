@@ -26,5 +26,6 @@
         <source-file
             src="src/android/CordovaCloverPlugin.java"
             target-dir="src/com/tekorius/cordovaCloverPlugin/" />
+        <framework src="src/android/clover.gradle" custom="true" type="gradleReference"/>
     </platform>
 </plugin>
