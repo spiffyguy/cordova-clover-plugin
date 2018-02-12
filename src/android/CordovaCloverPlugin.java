@@ -11,8 +11,12 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class CordovaCloverPlugin extends CordovaPlugin {
+
+    private CallbackContext callbackContext;
+    private String bill_id;
 
     private static final int SECURE_PAY_REQUEST_CODE = 1;
     //This bit value is used to store selected card entry methods, which can be combined with bitwise 'or' and passed to EXTRA_CARD_ENTRY_METHODS
@@ -21,9 +25,11 @@ public class CordovaCloverPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
+        this.callbackContext = callbackContext;
+
         if (action.equals("startPayment")) {
             Long amount = Long.parseLong(args.get(0).toString(), 10);
-            startSecurePaymentIntent(amount);
+            startSecurePaymentIntent(amount, (String) args.get(1));
 
             return true;
         }
@@ -33,8 +39,9 @@ public class CordovaCloverPlugin extends CordovaPlugin {
 
     // Start intent to launch Clover's secure payment activity
     //NOTE: ACTION_SECURE_PAY requires that your app has "clover.permission.ACTION_PAY" in it's AndroidManifest.xml file
-    private void startSecurePaymentIntent(long amount) {
+    private void startSecurePaymentIntent(long amount, String billId) {
         Intent intent = new Intent(Intents.ACTION_SECURE_PAY);
+        bill_id = billId;
 
         //EXTRA_AMOUNT is required for secure payment
         intent.putExtra(Intents.EXTRA_AMOUNT, amount);
@@ -50,12 +57,22 @@ public class CordovaCloverPlugin extends CordovaPlugin {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == SECURE_PAY_REQUEST_CODE){
+
             if (resultCode == Activity.RESULT_OK){
-                //Once the secure payment activity completes the result and its extras can be worked with
                 Payment payment = intent.getParcelableExtra(Intents.EXTRA_PAYMENT);
-                //String amountString = String.format("%.2f", ((Double) (0.01 * payment.getAmount())));
+                JSONObject json = payment.getJSONObject();
+
+                try {
+                    json.put("bill_id", bill_id);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                callbackContext.success(json);
                 Toast.makeText(cordova.getActivity().getApplicationContext(), "Payment OK", Toast.LENGTH_SHORT).show();
             } else {
+                callbackContext.error(bill_id);
+
                 Toast.makeText(cordova.getActivity().getApplicationContext(), "Payment Failed", Toast.LENGTH_SHORT).show();
             }
         }
